@@ -1,0 +1,29 @@
+name: Todoist Daily Advisor
+
+on:
+  schedule:
+    # Каждый день в 9:00 по московскому времени (UTC+3 → 06:00 UTC)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    # Кнопка "Run workflow" в GitHub — для ручного запуска и тестирования
+
+jobs:
+  send-daily-tips:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Todoist Advisor
+        env:
+          TODOIST_TOKEN: ${{ secrets.TODOIST_TOKEN }}
+          TG_TOKEN: ${{ secrets.TG_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          python My_Knowledge_Base/Scripts/todoist_daily_report.py
