@@ -132,9 +132,15 @@ def extract_news(client, channels_content):
     "what": "Что именно вышло — одно предложение",
     "available": "Где доступно (платформа, API, сайт) — или пусто если не указано",
     "price": "Цена — или пусто если не указано",
-    "search_query": "Поисковый запрос на английском для поиска подробностей, например: Kling AI 2.0 motion control features"
+    "points": "Ключевые поинты из поста если они есть — или пусто",
+    "needs_search": true,
+    "search_query": "Поисковый запрос на английском, например: Kling AI 2.0 motion control features"
   }}
-]"""
+]
+
+Правило для needs_search:
+- false — если в посте уже есть конкретные детали: что умеет, чем отличается, цифры, сравнения
+- true — если пост короткий или расплывчатый и деталей недостаточно чтобы понять продукт"""
 
     raw = ask_groq(client, prompt)
 
@@ -178,6 +184,8 @@ def apply_vai_style(client, enriched_news):
             news_block += f"   Доступно: {item['available']}\n"
         if item.get('price'):
             news_block += f"   Цена: {item['price']}\n"
+        if item.get('points'):
+            news_block += f"   Детали из поста: {item['points']}\n"
         if item.get('web_details'):
             news_block += f"   Детали из интернета: {item['web_details']}\n"
 
@@ -265,14 +273,18 @@ def main():
         news_items = extract_news(client, channels_content)
         print(f"Отобрано новостей: {len(news_items)}")
 
-        # === Шаг 3: Обогащаем каждую новость из интернета ===
-        print("Ищу детали в интернете...")
+        # === Шаг 3: Обогащаем из интернета только если нужно ===
+        print("Проверяю где нужен поиск...")
         for item in news_items:
-            query = item.get("search_query", item["name"])
-            details = search_product_details(query)
-            item["web_details"] = details
-            print(f"  🔍 {item['name']}: {'найдено' if details else 'нет данных'}")
-            time.sleep(1)  # небольшая пауза чтобы не банили
+            if item.get("needs_search", False):
+                query = item.get("search_query", item["name"])
+                details = search_product_details(query)
+                item["web_details"] = details
+                print(f"  🔍 {item['name']}: поиск → {'найдено' if details else 'нет данных'}")
+                time.sleep(1)
+            else:
+                item["web_details"] = ""
+                print(f"  ✅ {item['name']}: достаточно данных из поста")
 
         # === Шаг 4: Стилизация @VAI_ART ===
         print("Применяю стиль @VAI_ART...")
