@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Еженедельный AI-дайджест для @VAI_ART.
-Пайплайн: TG-каналы → отбор новостей (Claude) → стилизация @VAI_ART (Claude) → Telegram.
+Пайплайн: TG-каналы → отбор новостей (Gemini) → стилизация @VAI_ART (Gemini) → Telegram.
 Использование: python ai_digest.py
 """
 import json
@@ -11,12 +11,12 @@ import urllib.request
 import urllib.error
 from datetime import datetime, timezone, timedelta
 
-import anthropic
+import google.generativeai as genai
 
 # === НАСТРОЙКИ ===
 CHANNELS = ["neyr0graph", "cgevent", "data_secrets"]
 
-ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
 
@@ -50,7 +50,13 @@ def send_telegram(text):
         return json.loads(r.read()).get("ok", False)
 
 
-def extract_news(client, channels_content):
+def ask_gemini(prompt):
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    response = model.generate_content(prompt)
+    return response.text.strip()
+
+
+def extract_news(channels_content):
     """Шаг 1: Отбираем продуктовые новости из HTML каналов."""
     now = datetime.now(timezone.utc)
 
@@ -83,19 +89,13 @@ def extract_news(client, channels_content):
 
 Формат — просто нумерованный список с деталями. Это промежуточный результат, финальное форматирование будет отдельно."""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=2000,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return message.content[0].text.strip()
+    return ask_gemini(prompt)
 
 
-def apply_vai_style(client, news_list):
+def apply_vai_style(news_list):
     """Шаг 2: Переформатируем список новостей в стиль @VAI_ART."""
     now = datetime.now(timezone.utc)
     week_ago = now - timedelta(days=7)
-    news_count = news_list.count("\n\n") + 1  # примерная оценка насыщенности
 
     prompt = f"""Переформатируй этот список AI-новостей в стиль Telegram-канала @VAI_ART.
 
@@ -111,8 +111,8 @@ def apply_vai_style(client, news_list):
 ШАГ 1 — ВСТУПЛЕНИЕ (выбери одно по контексту):
 - Если неделя насыщена: "Рубрика самых интересных новостей в ИИ за неделю. Все по плану. Погнали!"
 - Если нейтральная: "Не меняя традиции. Пробежимся по новостям за неделю."
-- Если взрывная (>8 новостей): "Ох. Происходит очень много всего и везде. Быстро пробежимся по самому интересному."
-- Если спокойная (<5 новостей): "Немного ленивая неделя. На следующей побольше будет всего."
+- Если взрывная (больше 8 новостей): "Ох. Происходит очень много всего и везде. Быстро пробежимся по самому интересному."
+- Если спокойная (меньше 5 новостей): "Немного ленивая неделя. На следующей побольше будет всего."
 
 ШАГ 2 — СПИСОК НОВОСТЕЙ:
 Каждый пункт:
@@ -131,7 +131,7 @@ def apply_vai_style(client, news_list):
 
 ЧТО НЕ ДЕЛАТЬ:
 - Не использовать шапку "ИИ-дайджест | дата"
-- Не использовать **жирный текст** внутри пунктов
+- Не использовать жирный текст внутри пунктов
 - Не делать подзаголовки между пунктами
 - Не использовать маркетинговые фразы: "революционный", "инновационный", "прорывной"
 - Только 🔹 в пунктах, никаких других эмодзи
@@ -140,21 +140,18 @@ def apply_vai_style(client, news_list):
 
 Выведи только готовый пост, без пояснений."""
 
-    message = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=2000,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return message.content[0].text.strip()
+    return ask_gemini(prompt)
 
 
 def main():
-    if not ANTHROPIC_API_KEY:
-        print("ERROR: ANTHROPIC_API_KEY не задан", file=sys.stderr)
+    if not GEMINI_API_KEY:
+        print("ERROR: GEMINI_API_KEY не задан", file=sys.stderr)
         sys.exit(1)
     if not TG_TOKEN or not TG_CHAT_ID:
         print("ERROR: TG_TOKEN или TG_CHAT_ID не заданы", file=sys.stderr)
         sys.exit(1)
+
+    genai.configure(api_key=GEMINI_API_KEY)
 
     # === Шаг 1: Загружаем каналы ===
     all_html = []
@@ -176,17 +173,16 @@ def main():
         sys.exit(1)
 
     channels_content = "\n\n".join(all_html)
-    client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
     try:
         # === Шаг 2: Отбираем новости ===
-        print("Отбираю новости через Claude API...")
-        news_list = extract_news(client, channels_content)
+        print("Отбираю новости через Gemini...")
+        news_list = extract_news(channels_content)
         print(f"Новости отобраны: {len(news_list)} символов")
 
         # === Шаг 3: Стилизация @VAI_ART ===
         print("Применяю стиль @VAI_ART...")
-        final_post = apply_vai_style(client, news_list)
+        final_post = apply_vai_style(news_list)
         print(f"Пост готов: {len(final_post)} символов")
 
         # === Шаг 4: Отправляем в Telegram ===
