@@ -170,12 +170,22 @@ def search_product_details(query):
     """Шаг 2: Ищем детали о продукте через DuckDuckGo."""
     try:
         with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=3))
+            results = list(ddgs.text(query, max_results=5))
+
+        # Фильтруем по релевантности — хотя бы одно ключевое слово из запроса
+        key_terms = [w.lower() for w in query.split() if len(w) >= 4]
         snippets = []
         for r in results:
-            body = r.get('body', '').strip()[:250]
+            title = r.get('title', '')
+            body = r.get('body', '').strip()
+            combined = (title + " " + body).lower()
+            if key_terms and not any(t in combined for t in key_terms):
+                continue
             if body:
-                snippets.append(body)
+                snippets.append(body[:250])
+            if len(snippets) >= 3:
+                break
+
         return " | ".join(snippets)
     except Exception as e:
         print(f"  Search warning для '{query}': {e}", file=sys.stderr)
@@ -227,7 +237,9 @@ def apply_vai_style(client, enriched_news):
 Между пунктами — пустая строка.
 
 ПРАВИЛА:
-- В blockquote: ключевые поинты которые дают понимание продукта — чем отличается, что умеет, почему важно. Используй детали из интернета если они есть. Столько пунктов сколько нужно — не растягивай и не сжимай искусственно
+- В blockquote: только конкретные факты о продукте — что умеет, чем отличается, цифры. ТОЛЬКО информация которую ты точно знаешь из предоставленных данных. Не придумывай пункты, не добавляй воду. Если есть 2 реальных поинта — пиши 2, если 5 — пиши 5. НЕ делай всегда 3 пункта.
+- Если в данных нет ничего конкретного для blockquote — пропусти blockquote полностью для этого пункта.
+- Игнорируй нерелевантный мусор в "Деталях из интернета" — если текст не про этот продукт, не используй его.
 - Начинай хайлайт с сути — что изменилось или почему важно
 - В описании: факты, цена, платформа — без воды
 - Можно добавить короткую личную ноту после blockquote органично: "выглядит очень круто", "стоит попробовать"
