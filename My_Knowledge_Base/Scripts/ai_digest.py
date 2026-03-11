@@ -6,9 +6,11 @@
 """
 import json
 import os
+import re
 import sys
 import urllib.request
 from datetime import datetime, timezone, timedelta
+from html.parser import HTMLParser
 
 from groq import Groq
 
@@ -20,6 +22,36 @@ TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
 
 
+class TextExtractor(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self.skip = False
+
+    def handle_starttag(self, tag, attrs):
+        if tag in ("script", "style"):
+            self.skip = True
+
+    def handle_endtag(self, tag):
+        if tag in ("script", "style"):
+            self.skip = False
+        if tag in ("div", "p", "br", "li"):
+            self.parts.append("\n")
+
+    def handle_data(self, data):
+        if not self.skip:
+            text = data.strip()
+            if text:
+                self.parts.append(text)
+
+    def get_text(self):
+        text = " ".join(self.parts)
+        # Убираем множественные пробелы и пустые строки
+        text = re.sub(r" {2,}", " ", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()
+
+
 def fetch_channel(channel):
     url = f"https://t.me/s/{channel}"
     req = urllib.request.Request(
@@ -28,7 +60,11 @@ def fetch_channel(channel):
     )
     try:
         with urllib.request.urlopen(req, timeout=15) as r:
-            return r.read().decode("utf-8", errors="replace")
+            html = r.read().decode("utf-8", errors="replace")
+        # Извлекаем чистый текст из HTML
+        parser = TextExtractor()
+        parser.feed(html)
+        return parser.get_text()
     except Exception as e:
         print(f"Warning: не удалось загрузить {channel}: {e}", file=sys.stderr)
         return ""
@@ -86,8 +122,12 @@ def extract_news(client, channels_content):
 Для каждой новости выведи:
 - Название модели/продукта
 - Что именно вышло (1 предложение)
-- Где доступно и сколько стоит (если есть)
-- 3-5 конкретных особенностей: цифры, сравнения, факты
+- Где доступно и сколько стоит (если есть в постах — цена, платформа, API)
+- 3-5 конкретных особенностей: цифры, скорость, качество, сравнения
+
+ВАЖНО: "где доступно" — это платформа продукта (ChatGPT, Midjourney сайт, API, App Store и т.д.),
+а НЕ название Telegram-канала откуда взята новость.
+Если реальных деталей нет в постах — напиши только то что есть, не придумывай.
 
 Формат — просто нумерованный список с деталями. Это промежуточный результат."""
 
@@ -124,14 +164,16 @@ def apply_vai_style(client, news_list):
 - Нет bold-текста, нет подзаголовков, нет вложенных списков
 - Между пунктами — пустая строка
 
-ЗАКРЫТИЕ:
+ЗАКРЫТИЕ — обязательно в конце поста, на отдельных строках:
 @VAI_ART
 #VAI_News
 
 ЧТО НЕ ДЕЛАТЬ:
 - Не использовать шапку "ИИ-дайджест | дата"
 - Не использовать жирный текст внутри пунктов
+- Не упоминать названия Telegram-каналов как место доступности продукта
 - Не использовать маркетинговые фразы: "революционный", "инновационный", "прорывной"
+- Не придумывать детали которых нет — лучше короче но честно
 - Только 🔹 в пунктах, никаких других эмодзи
 
 ЛИМИТ: не более 4096 символов. Лучше 6 хороших пунктов, чем 10 обрезанных.
