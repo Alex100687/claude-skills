@@ -217,7 +217,7 @@ def main():
     for ch in CHANNELS:
         html = fetch_channel(ch)
         if html:
-            all_html.append(f"=== Канал: {ch} ===\n{html[:8000]}")
+            all_html.append(f"=== Канал: {ch} ===\n{html[:2500]}")
             print(f"  ✅ {ch}: {len(html)} символов загружено")
         else:
             print(f"  ⚠️  {ch}: не удалось загрузить")
