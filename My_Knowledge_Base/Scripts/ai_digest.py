@@ -203,8 +203,8 @@ def _convert_to_telegram_html(text):
         else:
             result.append(f"<blockquote>{_html.escape(part.strip())}</blockquote>")
     final = "".join(result)
-    # Не более одной пустой строки между пунктами
-    final = re.sub(r'\n{3,}', '\n\n', final)
+    # Схлопываем несколько переносов в один — без пустых строк между пунктами
+    final = re.sub(r'\n{2,}', '\n', final)
     return final.strip()
 
 
