@@ -9,6 +9,7 @@ import os
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone, timedelta
 from html.parser import HTMLParser
@@ -80,18 +81,27 @@ def fetch_channel(channel):
 
 
 def send_telegram(text):
-    payload = json.dumps({
-        "chat_id": TG_CHAT_ID,
-        "text": text,
-        "parse_mode": "HTML"
-    }).encode("utf-8")
-    req = urllib.request.Request(
-        f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
-        data=payload,
-        headers={"Content-Type": "application/json"}
-    )
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read()).get("ok", False)
+    if len(text) > 4096:
+        text = text[:4090] + "..."
+
+    def _post(payload_dict):
+        data = json.dumps(payload_dict).encode("utf-8")
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
+            data=data,
+            headers={"Content-Type": "application/json"}
+        )
+        with urllib.request.urlopen(req) as r:
+            return json.loads(r.read()).get("ok", False)
+
+    try:
+        return _post({"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"})
+    except urllib.error.HTTPError as e:
+        if e.code == 400:
+            # HTML невалиден — отправляем без форматирования
+            plain = re.sub(r"<[^>]+>", "", text)
+            return _post({"chat_id": TG_CHAT_ID, "text": plain})
+        raise
 
 
 def ask_groq(client, prompt):
