@@ -17,6 +17,10 @@ from html.parser import HTMLParser
 from groq import Groq
 from duckduckgo_search import DDGS
 
+# Cover generator (same Scripts folder)
+sys.path.insert(0, os.path.dirname(__file__))
+from cover_gen import generate_cover
+
 # === НАСТРОЙКИ ===
 CHANNELS = [
     "neyr0graph",
@@ -110,6 +114,30 @@ def send_telegram(text):
     plain = re.sub(r"<[^>]+>", "", text)
     plain = _html.unescape(plain)
     return _post({"chat_id": TG_CHAT_ID, "text": plain})
+
+
+def send_telegram_photo(photo_path):
+    with open(photo_path, "rb") as f:
+        photo_data = f.read()
+
+    import email.generator
+    boundary = "----FormBoundary7MA4YWxkTrZu0gW"
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'
+        f"{TG_CHAT_ID}\r\n"
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="photo"; filename="cover.png"\r\n'
+        f"Content-Type: image/png\r\n\r\n"
+    ).encode() + photo_data + f"\r\n--{boundary}--\r\n".encode()
+
+    req = urllib.request.Request(
+        f"https://api.telegram.org/bot{TG_TOKEN}/sendPhoto",
+        data=body,
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"}
+    )
+    with urllib.request.urlopen(req) as r:
+        return json.loads(r.read()).get("ok", False)
 
 
 def ask_groq(client, prompt):
@@ -359,7 +387,13 @@ def main():
         final_post = apply_vai_style(client, news_items)
         print(f"Пост готов: {len(final_post)} символов")
 
-        # === Шаг 5: Отправляем в Telegram ===
+        # === Шаг 5: Генерируем обложку ===
+        print("Генерирую обложку...")
+        cover_path = generate_cover()
+
+        # === Шаг 6: Отправляем обложку + текст в Telegram ===
+        send_telegram_photo(cover_path)
+        print("Обложка отправлена")
         ok = send_telegram(final_post)
         print("OK" if ok else "FAILED — сообщение не отправлено")
 
