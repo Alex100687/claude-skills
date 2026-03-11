@@ -15,7 +15,16 @@ from html.parser import HTMLParser
 from groq import Groq
 
 # === НАСТРОЙКИ ===
-CHANNELS = ["neyr0graph", "cgevent", "data_secrets"]
+CHANNELS = [
+    "neyr0graph",
+    "cgevent",
+    "data_secrets",
+    "TochkiNadAI",
+    "tips_ai",
+    "seeallochnaya",
+    "AcidCrunch",
+    "data_analysis_ml",
+]
 
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
