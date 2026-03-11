@@ -81,6 +81,8 @@ def fetch_channel(channel):
 
 
 def send_telegram(text):
+    import html as _html
+
     if len(text) > 4096:
         text = text[:4090] + "..."
 
@@ -94,13 +96,20 @@ def send_telegram(text):
         with urllib.request.urlopen(req) as r:
             return json.loads(r.read()).get("ok", False)
 
+    # Попытка 1: HTML
     try:
         return _post({"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"})
     except urllib.error.HTTPError as e:
         if e.code == 400:
-            plain = re.sub(r"<[^>]+>", "", text)
-            return _post({"chat_id": TG_CHAT_ID, "text": plain})
-        raise
+            err_body = e.read().decode("utf-8", errors="replace")
+            print(f"Telegram HTML rejected: {err_body}", file=sys.stderr)
+        else:
+            raise
+
+    # Попытка 2: plain text — убираем теги и html-entities
+    plain = re.sub(r"<[^>]+>", "", text)
+    plain = _html.unescape(plain)
+    return _post({"chat_id": TG_CHAT_ID, "text": plain})
 
 
 def ask_groq(client, prompt):
@@ -196,6 +205,7 @@ def search_product_details(query):
 def _convert_to_telegram_html(text):
     """Конвертирует [Q]...[/Q] в <blockquote>, экранирует весь остальной HTML."""
     import html as _html
+    # Убираем маркеры и собираем текст + blockquote
     parts = re.split(r'\[Q\](.*?)\[/Q\]', text, flags=re.DOTALL)
     result = []
     for i, part in enumerate(parts):
@@ -204,10 +214,11 @@ def _convert_to_telegram_html(text):
         else:
             content = _html.escape(part.strip())
             if content:
-                result.append(f"<blockquote>{content}</blockquote>")
+                # blockquote на отдельной строке
+                result.append(f"\n<blockquote>{content}</blockquote>\n")
     final = "".join(result)
-    # Одинарный перенос между пунктами, без пустых строк
-    final = re.sub(r'\n{2,}', '\n', final)
+    # Убираем лишние пустые строки, оставляем одинарные переносы
+    final = re.sub(r'\n{3,}', '\n\n', final)
     return final.strip()
 
 
