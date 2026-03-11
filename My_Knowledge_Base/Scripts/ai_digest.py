@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 """
 Еженедельный AI-дайджест для @VAI_ART.
-Пайплайн: TG-каналы → отбор новостей (Gemini) → стилизация @VAI_ART (Gemini) → Telegram.
+Пайплайн: TG-каналы → отбор новостей (Groq) → стилизация @VAI_ART (Groq) → Telegram.
 Использование: python ai_digest.py
 """
 import json
 import os
 import sys
 import urllib.request
-import urllib.error
 from datetime import datetime, timezone, timedelta
 
-import google.generativeai as genai
+from groq import Groq
 
 # === НАСТРОЙКИ ===
 CHANNELS = ["neyr0graph", "cgevent", "data_secrets"]
 
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
 
@@ -50,13 +49,16 @@ def send_telegram(text):
         return json.loads(r.read()).get("ok", False)
 
 
-def ask_gemini(prompt):
-    model = genai.GenerativeModel("gemini-2.0-flash")
-    response = model.generate_content(prompt)
-    return response.text.strip()
+def ask_groq(client, prompt):
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=2000,
+    )
+    return response.choices[0].message.content.strip()
 
 
-def extract_news(channels_content):
+def extract_news(client, channels_content):
     """Шаг 1: Отбираем продуктовые новости из HTML каналов."""
     now = datetime.now(timezone.utc)
 
@@ -87,15 +89,13 @@ def extract_news(channels_content):
 - Где доступно и сколько стоит (если есть)
 - 3-5 конкретных особенностей: цифры, сравнения, факты
 
-Формат — просто нумерованный список с деталями. Это промежуточный результат, финальное форматирование будет отдельно."""
+Формат — просто нумерованный список с деталями. Это промежуточный результат."""
 
-    return ask_gemini(prompt)
+    return ask_groq(client, prompt)
 
 
-def apply_vai_style(news_list):
+def apply_vai_style(client, news_list):
     """Шаг 2: Переформатируем список новостей в стиль @VAI_ART."""
-    now = datetime.now(timezone.utc)
-    week_ago = now - timedelta(days=7)
 
     prompt = f"""Переформатируй этот список AI-новостей в стиль Telegram-канала @VAI_ART.
 
@@ -108,50 +108,48 @@ def apply_vai_style(news_list):
 
 Автор — CG-специалист с 15 годами опыта. Пишет для своей аудитории напрямую, без пафоса. Тон: "свой парень, который в теме". Аудитория знает терминологию — разжёвывать не нужно.
 
-ШАГ 1 — ВСТУПЛЕНИЕ (выбери одно по контексту):
+ВСТУПЛЕНИЕ (выбери одно по контексту):
 - Если неделя насыщена: "Рубрика самых интересных новостей в ИИ за неделю. Все по плану. Погнали!"
 - Если нейтральная: "Не меняя традиции. Пробежимся по новостям за неделю."
 - Если взрывная (больше 8 новостей): "Ох. Происходит очень много всего и везде. Быстро пробежимся по самому интересному."
 - Если спокойная (меньше 5 новостей): "Немного ленивая неделя. На следующей побольше будет всего."
 
-ШАГ 2 — СПИСОК НОВОСТЕЙ:
-Каждый пункт:
+СПИСОК НОВОСТЕЙ — каждый пункт:
 🔹 [Название модели или продукта] — [что вышло и чем примечательно, 1-2 предложения]
 
-Правила пунктов:
-- Начинай с сути — что именно вышло, что изменилось
-- Если есть конкретная цифра (цена, длина видео, скорость) — добавь
-- Можно короткую личную ноту: "выглядит очень круто", "интересная штука", "стоит попробовать" — органично, не в каждом пункте
+Правила:
+- Начинай с сути — что именно вышло
+- Конкретные цифры если есть (цена, длина видео, скорость)
+- Можно короткую личную ноту органично: "выглядит очень круто", "стоит попробовать"
 - Нет bold-текста, нет подзаголовков, нет вложенных списков
 - Между пунктами — пустая строка
 
-ШАГ 3 — ЗАКРЫТИЕ:
+ЗАКРЫТИЕ:
 @VAI_ART
 #VAI_News
 
 ЧТО НЕ ДЕЛАТЬ:
 - Не использовать шапку "ИИ-дайджест | дата"
 - Не использовать жирный текст внутри пунктов
-- Не делать подзаголовки между пунктами
 - Не использовать маркетинговые фразы: "революционный", "инновационный", "прорывной"
 - Только 🔹 в пунктах, никаких других эмодзи
 
-ЛИМИТ: не более 4096 символов. Если превышает — сокращай описания, начиная с менее важных. Лучше 6 хороших пунктов, чем 10 обрезанных.
+ЛИМИТ: не более 4096 символов. Лучше 6 хороших пунктов, чем 10 обрезанных.
 
 Выведи только готовый пост, без пояснений."""
 
-    return ask_gemini(prompt)
+    return ask_groq(client, prompt)
 
 
 def main():
-    if not GEMINI_API_KEY:
-        print("ERROR: GEMINI_API_KEY не задан", file=sys.stderr)
+    if not GROQ_API_KEY:
+        print("ERROR: GROQ_API_KEY не задан", file=sys.stderr)
         sys.exit(1)
     if not TG_TOKEN or not TG_CHAT_ID:
         print("ERROR: TG_TOKEN или TG_CHAT_ID не заданы", file=sys.stderr)
         sys.exit(1)
 
-    genai.configure(api_key=GEMINI_API_KEY)
+    client = Groq(api_key=GROQ_API_KEY)
 
     # === Шаг 1: Загружаем каналы ===
     all_html = []
@@ -176,13 +174,13 @@ def main():
 
     try:
         # === Шаг 2: Отбираем новости ===
-        print("Отбираю новости через Gemini...")
-        news_list = extract_news(channels_content)
+        print("Отбираю новости через Groq...")
+        news_list = extract_news(client, channels_content)
         print(f"Новости отобраны: {len(news_list)} символов")
 
         # === Шаг 3: Стилизация @VAI_ART ===
         print("Применяю стиль @VAI_ART...")
-        final_post = apply_vai_style(news_list)
+        final_post = apply_vai_style(client, news_list)
         print(f"Пост готов: {len(final_post)} символов")
 
         # === Шаг 4: Отправляем в Telegram ===

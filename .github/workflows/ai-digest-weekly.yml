@@ -21,11 +21,11 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install google-generativeai
+        run: pip install groq
 
       - name: Run AI Digest
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
