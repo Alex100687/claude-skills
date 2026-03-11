@@ -172,12 +172,16 @@ def search_product_details(query):
         with DDGS() as ddgs:
             results = list(ddgs.text(query, max_results=5))
 
-        # Фильтруем по релевантности — хотя бы одно ключевое слово из запроса
+        # Фильтруем по релевантности и языку
         key_terms = [w.lower() for w in query.split() if len(w) >= 4]
         snippets = []
         for r in results:
             title = r.get('title', '')
             body = r.get('body', '').strip()
+            # Отсеиваем тексты с CJK-иероглифами (китайский, японский, корейский)
+            cjk = sum(1 for c in body if '\u4e00' <= c <= '\u9fff' or '\u3040' <= c <= '\u30ff')
+            if cjk / max(len(body), 1) > 0.05:
+                continue
             combined = (title + " " + body).lower()
             if key_terms and not any(t in combined for t in key_terms):
                 continue
@@ -215,15 +219,17 @@ def apply_vai_style(client, enriched_news):
     news_block = ""
     for i, item in enumerate(enriched_news, 1):
         news_block += f"\n{i}. {item['name']}\n"
-        news_block += f"   Что вышло: {item['what']}\n"
+        # Поля для описания (блок 2) — только контекст
+        news_block += f"   [ДЛЯ ОПИСАНИЯ] Что вышло: {item['what']}\n"
         if item.get('available'):
-            news_block += f"   Доступно: {item['available']}\n"
+            news_block += f"   [ДЛЯ ОПИСАНИЯ] Доступно: {item['available']}\n"
         if item.get('price'):
-            news_block += f"   Цена: {item['price']}\n"
+            news_block += f"   [ДЛЯ ОПИСАНИЯ] Цена: {item['price']}\n"
+        # Поля для blockquote (блок 3) — только фичи и детали
         if item.get('points'):
-            news_block += f"   Детали из поста: {item['points']}\n"
+            news_block += f"   [ДЛЯ BLOCKQUOTE] Фичи из поста: {item['points']}\n"
         if item.get('web_details'):
-            news_block += f"   Детали из интернета: {item['web_details']}\n"
+            news_block += f"   [ДЛЯ BLOCKQUOTE] Детали из интернета: {item['web_details']}\n"
 
     prompt = f"""Переформатируй этот список AI-новостей в стиль Telegram-канала @VAI_ART.
 
@@ -244,14 +250,13 @@ def apply_vai_style(client, enriched_news):
 
 ФОРМАТ КАЖДОГО ПУНКТА:
 
-🔹 [Название] — [хайлайт одной фразой, самое главное]
-[Описание: что вышло, где доступно, цена — 1-2 предложения. Только общий контекст, без перечисления фич.]
+🔹 [Название] — [хайлайт одной фразой]
+[Описание — строго из полей [ДЛЯ ОПИСАНИЯ]: что вышло, где доступно, цена. 1-2 предложения, без фич.]
 [Q]
-— конкретная фича или деталь, которая НЕ упомянута в описании выше
-— ещё одна уникальная деталь
+— [строго из полей [ДЛЯ BLOCKQUOTE]: конкретные фичи, объяснённые простым языком]
 [/Q]
 
-Описание и blockquote не должны дублировать друг друга. Если в описании уже сказано "используется плагин Atom" — в blockquote это не повторять.
+СТРОГОЕ ПРАВИЛО: поля [ДЛЯ ОПИСАНИЯ] → только в описание. Поля [ДЛЯ BLOCKQUOTE] → только в blockquote. Никакого смешивания.
 
 Между пунктами — пустая строка.
 
