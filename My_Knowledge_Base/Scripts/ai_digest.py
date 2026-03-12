@@ -380,7 +380,6 @@ def main():
         sys.exit(1)
 
     channels_content = "\n\n".join(all_html)
-    channels_content = channels_content[:15000]  # temp: лимит токенов для тест-модели
 
     try:
         # === Шаг 2: Отбираем новости (JSON) ===
