@@ -160,7 +160,7 @@ def send_telegram_photo(photo_path):
 
 def ask_groq(client, prompt):
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="llama3-8b-8192",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=2000,
     )
