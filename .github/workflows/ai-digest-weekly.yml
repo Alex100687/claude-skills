@@ -28,5 +28,6 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          TG_THREAD_DIGEST: ${{ secrets.TG_THREAD_DIGEST }}
         run: |
           python My_Knowledge_Base/Scripts/ai_digest.py
