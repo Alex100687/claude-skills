@@ -105,6 +105,8 @@ def send_telegram(text):
     if TG_THREAD_DIGEST:
         base["message_thread_id"] = int(TG_THREAD_DIGEST)
 
+    print(f"DEBUG send_telegram: chat_id={TG_CHAT_ID} thread={TG_THREAD_DIGEST} keys={list(base.keys())}")
+
     # Попытка 1: HTML
     try:
         return _post({**base, "parse_mode": "HTML"})
