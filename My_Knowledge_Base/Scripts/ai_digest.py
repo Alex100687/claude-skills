@@ -122,25 +122,26 @@ def send_telegram(text):
 
 
 def send_telegram_photo(photo_path):
+    import base64
     with open(photo_path, "rb") as f:
-        photo_data = f.read()
+        photo_b64 = base64.b64encode(f.read()).decode()
 
-    import email.generator
+    # Use sendPhoto with file_id via input_media — actually use multipart but with explicit logging
     boundary = "----FormBoundary7MA4YWxkTrZu0gW"
-    thread_part = ""
+    parts = []
+    parts.append(
+        f"--{boundary}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{TG_CHAT_ID}\r\n"
+    )
     if TG_THREAD_DIGEST:
-        thread_part = (
-            f"--{boundary}\r\n"
-            f'Content-Disposition: form-data; name="message_thread_id"\r\n\r\n'
-            f"{TG_THREAD_DIGEST}\r\n"
+        parts.append(
+            f"--{boundary}\r\nContent-Disposition: form-data; name=\"message_thread_id\"\r\n\r\n{TG_THREAD_DIGEST}\r\n"
         )
-    body = (
+        print(f"Sending photo to thread_id={TG_THREAD_DIGEST}")
+
+    photo_data = base64.b64decode(photo_b64)
+    body = "".join(parts).encode() + (
         f"--{boundary}\r\n"
-        f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'
-        f"{TG_CHAT_ID}\r\n"
-        f"{thread_part}"
-        f"--{boundary}\r\n"
-        f'Content-Disposition: form-data; name="photo"; filename="cover.png"\r\n'
+        f"Content-Disposition: form-data; name=\"photo\"; filename=\"cover.png\"\r\n"
         f"Content-Type: image/png\r\n\r\n"
     ).encode() + photo_data + f"\r\n--{boundary}--\r\n".encode()
 
@@ -150,7 +151,9 @@ def send_telegram_photo(photo_path):
         headers={"Content-Type": f"multipart/form-data; boundary={boundary}"}
     )
     with urllib.request.urlopen(req) as r:
-        return json.loads(r.read()).get("ok", False)
+        resp = json.loads(r.read())
+        print(f"Photo response: {resp.get('ok')} thread={resp.get('result', {}).get('message_thread_id')}")
+        return resp.get("ok", False)
 
 
 def ask_groq(client, prompt):
