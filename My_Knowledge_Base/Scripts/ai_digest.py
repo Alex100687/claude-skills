@@ -36,6 +36,7 @@ CHANNELS = [
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
+TG_THREAD_DIGEST = os.environ.get("TG_THREAD_DIGEST", "")
 
 
 class TextExtractor(HTMLParser):
@@ -100,9 +101,13 @@ def send_telegram(text):
         with urllib.request.urlopen(req) as r:
             return json.loads(r.read()).get("ok", False)
 
+    base = {"chat_id": TG_CHAT_ID, "text": text}
+    if TG_THREAD_DIGEST:
+        base["message_thread_id"] = int(TG_THREAD_DIGEST)
+
     # Попытка 1: HTML
     try:
-        return _post({"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"})
+        return _post({**base, "parse_mode": "HTML"})
     except urllib.error.HTTPError as e:
         if e.code == 400:
             err_body = e.read().decode("utf-8", errors="replace")
@@ -113,7 +118,7 @@ def send_telegram(text):
     # Попытка 2: plain text — убираем теги и html-entities
     plain = re.sub(r"<[^>]+>", "", text)
     plain = _html.unescape(plain)
-    return _post({"chat_id": TG_CHAT_ID, "text": plain})
+    return _post({**base, "text": plain})
 
 
 def send_telegram_photo(photo_path):
@@ -122,10 +127,18 @@ def send_telegram_photo(photo_path):
 
     import email.generator
     boundary = "----FormBoundary7MA4YWxkTrZu0gW"
+    thread_part = ""
+    if TG_THREAD_DIGEST:
+        thread_part = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="message_thread_id"\r\n\r\n'
+            f"{TG_THREAD_DIGEST}\r\n"
+        )
     body = (
         f"--{boundary}\r\n"
         f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'
         f"{TG_CHAT_ID}\r\n"
+        f"{thread_part}"
         f"--{boundary}\r\n"
         f'Content-Disposition: form-data; name="photo"; filename="cover.png"\r\n'
         f"Content-Type: image/png\r\n\r\n"
