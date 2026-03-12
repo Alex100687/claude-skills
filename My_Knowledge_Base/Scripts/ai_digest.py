@@ -160,7 +160,7 @@ def send_telegram_photo(photo_path):
 
 def ask_groq(client, prompt):
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+        model="gemma2-9b-it",
         messages=[{"role": "user", "content": prompt}],
         max_tokens=2000,
     )
@@ -380,7 +380,7 @@ def main():
         sys.exit(1)
 
     channels_content = "\n\n".join(all_html)
-    channels_content = channels_content[:20000]  # temp: лимит токенов для тест-модели
+    channels_content = channels_content[:15000]  # temp: лимит токенов для тест-модели
 
     try:
         # === Шаг 2: Отбираем новости (JSON) ===
