@@ -15,6 +15,7 @@ TODOIST_TOKEN = os.environ.get("TODOIST_TOKEN", "")
 TODOIST_BASE = "https://api.todoist.com/api/v1"
 TG_TOKEN = os.environ.get("TG_TOKEN", "")
 TG_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
+TG_THREAD_TODOIST = os.environ.get("TG_THREAD_TODOIST", "")
 
 
 def todoist_get(endpoint):
@@ -30,7 +31,10 @@ def todoist_get(endpoint):
 
 
 def send_telegram(text):
-    payload = json.dumps({"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"}).encode("utf-8")
+    msg = {"chat_id": TG_CHAT_ID, "text": text, "parse_mode": "HTML"}
+    if TG_THREAD_TODOIST:
+        msg["message_thread_id"] = int(TG_THREAD_TODOIST)
+    payload = json.dumps(msg).encode("utf-8")
     req = urllib.request.Request(
         f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage",
         data=payload,
