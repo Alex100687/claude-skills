@@ -1,0 +1,15 @@
+=== STDOUT ===
+Дайджест отправлен. Итоги пайплайна:
+
+**Медиа скачано:** 10 файлов (runway_characters, grok_references ×3, vidu_q3_pro ×3, openai_codex_windows, notebooklm_cinematic, perplexity_comet)
+
+**Пост:** 2903 символа / 4096 лимит
+
+**Отправлено в Telegram:**
+- Обложка `cover.png` → топик #7
+- Пост с 10 новостями недели → топик #7
+
+**Топ новостей этой недели:**
+GPT-5.4 (1М токенов) · Runway Characters · Photoshop Rotate Object · Grok 7 References · Vidu q3-pro · Gemini Embedding 2 · Claude Code Review · OpenAI Codex Windows · NotebookLM Cinematic · Perplexity Comet
+
+=== STDERR ===

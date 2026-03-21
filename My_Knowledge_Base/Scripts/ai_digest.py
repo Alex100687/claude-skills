@@ -48,6 +48,10 @@ class TextExtractor(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag in ("script", "style"):
             self.skip = True
+        if tag == "a":
+            href = dict(attrs).get("href", "")
+            if href and href.startswith("http") and "t.me" not in href:
+                self.parts.append(f"[{href}]")
 
     def handle_endtag(self, tag):
         if tag in ("script", "style"):
@@ -197,10 +201,14 @@ def extract_news(client, channels_content):
     "available": "Где доступно (платформа, API, сайт) — или пусто",
     "price": "Цена — или пусто",
     "features": "Конкретные фичи и возможности через запятую — что УМЕЕТ продукт. Не абстрактные слова а конкретика. Или пусто если в посте не указано",
+    "url": "прямая ссылка на продукт/сайт/блог из поста — или пусто если нет",
+    "keywords": ["ключевое", "слово", "из поста"],
     "needs_search": true,
     "search_query": "Поисковый запрос на английском"
   }}
 ]
+
+Правило для keywords: 2-4 слова которые точно есть в оригинальном посте (на языке поста) — для поиска медиа. Обычно это название продукта/модели.
 
 Правило для needs_search:
 - false — если в посте уже есть конкретные фичи: что умеет, чем отличается, цифры
@@ -248,9 +256,144 @@ def search_product_details(query):
         return ""
 
 
+def generate_slug(name):
+    """Название продукта → lower_snake_case для имён файлов."""
+    slug = name.lower()
+    slug = re.sub(r'[^\w\s.-]', '', slug)
+    slug = re.sub(r'[\s.-]+', '_', slug.strip())
+    return slug.strip('_')
+
+
+def fetch_raw_html(channel):
+    """Возвращает сырой HTML страницы канала."""
+    url = f"https://t.me/s/{channel}"
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    })
+    with urllib.request.urlopen(req, timeout=15) as r:
+        return r.read().decode('utf-8', errors='replace')
+
+
+def parse_posts_media(html):
+    """Из сырого HTML канала возвращает [{text, photos, videos}]."""
+    posts = []
+    blocks = re.split(r'(?=<div class="tgme_widget_message_wrap)', html)
+    for block in blocks:
+        text_parts = re.findall(
+            r'<div[^>]*class="[^"]*tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>',
+            block, re.DOTALL
+        )
+        text = ' '.join(re.sub(r'<[^>]+>', ' ', t) for t in text_parts).strip()
+        photos = re.findall(
+            r'tgme_widget_message_photo_wrap[^"]*"[^>]*style="[^"]*background-image:url\(\'([^\']+)\'\)',
+            block
+        )
+        videos = re.findall(r'<video[^>]+src="([^"]+)"', block)
+        if text or photos or videos:
+            posts.append({'text': text, 'photos': photos, 'videos': videos})
+    return posts
+
+
+def download_media_file(url, path):
+    req = urllib.request.Request(url, headers={
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    })
+    with urllib.request.urlopen(req, timeout=20) as r:
+        data = r.read()
+    with open(path, 'wb') as f:
+        f.write(data)
+
+
+def download_news_media(news_items, media_dir):
+    """
+    Скачивает медиа для каждой новости из всех каналов.
+    Ключевые слова берутся из имени продукта (words >= 3 chars).
+    Возвращает список сохранённых файлов.
+    """
+    os.makedirs(media_dir, exist_ok=True)
+
+    # Кэшируем сырой HTML всех каналов
+    html_cache = {}
+    print("  Загружаю сырой HTML каналов для медиа...")
+    for ch in CHANNELS:
+        try:
+            html_cache[ch] = fetch_raw_html(ch)
+        except Exception as e:
+            print(f"  [{ch}] не удалось загрузить: {e}", file=sys.stderr)
+
+    saved_files = []
+
+    for item in news_items:
+        slug = generate_slug(item['name'])
+        # keywords от Groq — слова из оригинального поста
+        raw_kw = item.get('keywords') or []
+        if isinstance(raw_kw, str):
+            raw_kw = [raw_kw]
+        # Fallback: берём из name если keywords пусто
+        if not raw_kw:
+            stop = {'the', 'and', 'for', 'with', 'new', 'from'}
+            raw_kw = [
+                w for w in re.findall(r'[\w.]+', item['name'])
+                if len(w) >= 3 and w.lower() not in stop
+            ]
+        # Максимум 2 ключевых слова (меньше ложных пропусков)
+        kw_strict = raw_kw[:2]
+        if not kw_strict:
+            continue
+        print(f"  [{slug}] ищу по: {kw_strict}")
+
+        all_media_urls = []
+
+        for channel, html in html_cache.items():
+            try:
+                posts = parse_posts_media(html)
+                matched = 0
+                for post in posts:
+                    t = post['text'].lower()
+                    if all(kw.lower() in t for kw in kw_strict):
+                        media = post['photos'] + post['videos']
+                        matched += len(media)
+                        for u in media:
+                            if u not in all_media_urls:
+                                all_media_urls.append(u)
+                if matched:
+                    print(f"    [{channel}] найдено {matched} медиа")
+            except Exception as e:
+                print(f"  [{channel}] ошибка парсинга: {e}", file=sys.stderr)
+
+        if not all_media_urls:
+            print(f"  [{slug}] медиа не найдено (keywords={kw_strict})")
+            continue
+
+        for idx, url in enumerate(all_media_urls, 1):
+            try:
+                ext = url.split('?')[0].split('.')[-1][:4]
+                if ext not in ('jpg', 'jpeg', 'png', 'gif', 'mp4', 'webp'):
+                    ext = 'jpg'
+                filename = os.path.join(media_dir, f"{slug}_{idx}.{ext}")
+                download_media_file(url, filename)
+                saved_files.append(filename)
+                print(f"  Сохранено: {filename}")
+            except Exception as e:
+                print(f"  [!] не удалось скачать: {e}", file=sys.stderr)
+
+    return saved_files
+
+
 def _convert_to_telegram_html(text):
-    """Конвертирует [Q]...[/Q] в <blockquote>, экранирует весь остальной HTML."""
+    """Конвертирует [Q]...[/Q] в <blockquote> и [L=URL]...[/L] в <a href>, экранирует остальной HTML."""
     import html as _html
+
+    # Шаг 1: Заменяем [L=URL]Name[/L] на плейсхолдер до экранирования
+    links = []
+    def _replace_link(m):
+        url = m.group(1)
+        name = m.group(2)
+        placeholder = f"\x00LINK{len(links)}\x00"
+        links.append(f'<a href="{url}">{_html.escape(name)}</a>')
+        return placeholder
+    text = re.sub(r'\[L=([^\]]+)\](.*?)\[/L\]', _replace_link, text)
+
     # Убираем маркеры и собираем текст + blockquote
     parts = re.split(r'\[Q\](.*?)\[/Q\]', text, flags=re.DOTALL)
     result = []
@@ -263,6 +406,9 @@ def _convert_to_telegram_html(text):
                 # blockquote на отдельной строке
                 result.append(f"\n<blockquote>{content}</blockquote>\n")
     final = "".join(result)
+    # Шаг 2: Восстанавливаем ссылки из плейсхолдеров
+    for i, link_html in enumerate(links):
+        final = final.replace(f"\x00LINK{i}\x00", link_html)
     # Убираем лишние пустые строки, оставляем одинарные переносы
     final = re.sub(r'\n{3,}', '\n\n', final)
     return final.strip()
@@ -274,6 +420,8 @@ def apply_vai_style(client, enriched_news):
     news_block = ""
     for i, item in enumerate(enriched_news, 1):
         news_block += f"\n{i}. {item['name']}\n"
+        if item.get('url'):
+            news_block += f"   URL: {item['url']}\n"
         news_block += f"   КОНТЕКСТ: {item['what']}"
         if item.get('available'):
             news_block += f" | Доступно: {item['available']}"
@@ -335,7 +483,8 @@ def apply_vai_style(client, enriched_news):
 - Не выдумывай то, чего нет в данных
 - Никаких иероглифов и текста не на русском
 - Только 🔹, никаких других эмодзи
-- Нет HTML-тегов — только текст и [Q]...[/Q]
+- Нет HTML-тегов — только текст, [Q]...[/Q] и [L=URL]...[/L]
+- Если у новости есть URL — оборачивай название в заголовке: 🔹 [L=URL]Название[/L] — суть. Если URL нет — просто 🔹 Название — суть
 - Не упоминай TG-каналы
 - Без воды: "это шаг вперёд", "открывает возможности", "может принести успех" — удалять
 - Лимит 4096 символов
@@ -386,6 +535,15 @@ def main():
         print("Отбираю новости через Groq...")
         news_items = extract_news(client, channels_content)
         print(f"Отобрано новостей: {len(news_items)}")
+
+        # === Шаг 2б: Скачиваем медиа для отобранных новостей ===
+        print("Скачиваю медиа для новостей...")
+        media_dir = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            '..', 'Digest_Media', datetime.now().strftime('%Y-%m-%d')
+        )
+        downloaded_media = download_news_media(news_items, media_dir)
+        print(f"Медиа скачано: {len(downloaded_media)} файлов")
 
         # === Шаг 3: Обогащаем из интернета только если нужно ===
         print("Проверяю где нужен поиск...")

@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --bg2: #161b22;
+    --bg-hover: #1c2129;
+    --border: rgba(48,54,61,0.6);
+    --accent: #55aa88;
+    --accent-dim: rgba(85,170,136,0.1);
+    --text: #c9d1d9;
+    --text-bright: #e6edf3;
+    --red: #f85149;
+    --amber: #d29922;
+    --blue: #58a6ff;
+    --gray: #6e7681;
+
+    --header-height: 42px;
+    --metrics-height: 36px;
+    --panel-min-width: 320px;
+    --panel-max-width: 480px;
+    --panel-header-height: 32px;
+    --panel-padding: 16px;
+    --border-radius: 6px;
+    --chip-height: 24px;
+
+    --transition-fast: 120ms ease-out;
+    --transition-slow: 300ms ease-out;
+    --pulse-timing: 2s ease infinite;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @media (prefers-reduced-motion) {
+    * { animation: none !important; transition: none !important; }
+  }
+
+  /* ── HEADER ── */
+  .header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-height);
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 100;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-logo {
+    font-weight: 600; font-size: 14px;
+    letter-spacing: 0.08em;
+    color: var(--text-bright);
+  }
+  .header-logo span { color: var(--accent); }
+  .header-sep { color: var(--border); font-size: 16px; }
+  .header-tag {
+    font-size: 10px;
+    color: var(--gray);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+  .header-right { display: flex; align-items: center; gap: 16px; }
+  .header-date { color: var(--gray); font-size: 11px; }
+  .live-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(85,170,136,0.5);
+    animation: pulse var(--pulse-timing);
+  }
+
+  /* ── METRICS STRIP ── */
+  .metrics-strip {
+    position: fixed;
+    top: var(--header-height);
+    left: 0; right: 0;
+    height: var(--metrics-height);
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 32px;
+    z-index: 99;
+    font-size: 11px;
+  }
+  .metric-item { display: flex; align-items: center; gap: 6px; }
+  .metric-label { color: var(--gray); }
+  .metric-val { color: var(--text-bright); font-weight: 600; }
+  .metric-val.green { color: var(--accent); }
+  .metric-val.amber { color: var(--amber); }
+  .metric-val.blue { color: var(--blue); }
+  .metric-divider {
+    width: 1px; height: 16px;
+    background: var(--border);
+  }
+
+  /* ── MAIN GRID ── */
+  .dashboard {
+    padding-top: calc(var(--header-height) + var(--metrics-height) + 24px);
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 48px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--panel-min-width), var(--panel-max-width)));
+    gap: 16px;
+    justify-content: center;
+    max-width: 1520px;
+    margin: 0 auto;
+  }
+
+  /* ── PANEL ── */
+  .panel {
+    animation: fadeIn var(--transition-slow) both;
+    background: var(--bg2);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: box-shadow var(--transition-fast);
+  }
+  .panel:hover {
+    box-shadow: 0 0 16px var(--accent-dim);
+  }
+  .panel:nth-child(1) { animation-delay: 0ms; }
+  .panel:nth-child(2) { animation-delay: 60ms; }
+  .panel:nth-child(3) { animation-delay: 120ms; }
+  .panel:nth-child(4) { animation-delay: 180ms; }
+  .panel:nth-child(5) { animation-delay: 240ms; }
+  .panel:nth-child(6) { animation-delay: 300ms; }
+
+  .panel-header {
+    height: var(--panel-header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--panel-padding);
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+  }
+  .panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-bright);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 10px;
+  }
+  .panel-title-icon {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  .panel-count {
+    font-size: 10px;
+    color: var(--gray);
+    background: rgba(110,118,129,0.1);
+    padding: 1px 6px;
+    border-radius: 3px;
+  }
+  .panel-body {
+    padding: var(--panel-padding);
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  .panel-body::-webkit-scrollbar { width: 4px; }
+  .panel-body::-webkit-scrollbar-track { background: transparent; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── TASK ITEMS ── */
+  .task-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+    animation: slideIn 200ms ease both;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-priority {
+    width: 3px;
+    min-height: 32px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .task-priority.urgent { background: var(--red); box-shadow: 0 0 4px rgba(248,81,73,0.3); }
+  .task-priority.high { background: var(--amber); }
+  .task-priority.medium { background: var(--blue); }
+  .task-priority.low { background: var(--gray); }
+  .task-content { flex: 1; min-width: 0; }
+  .task-title {
+    font-size: 12px;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .task-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+  }
+  .task-id { color: var(--gray); }
+  .task-status {
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+  .task-status.in_progress { background: rgba(210,153,34,0.15); color: var(--amber); }
+  .task-status.in_review { background: rgba(88,166,255,0.15); color: var(--blue); }
+  .task-status.todo { background: rgba(110,118,129,0.15); color: var(--gray); }
+
+  /* ── FILE ITEMS ── */
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+    font-size: 12px;
+  }
+  .file-item:last-child { border-bottom: none; }
+  .file-icon { color: var(--gray); font-size: 14px; flex-shrink: 0; }
+  .file-info { flex: 1; min-width: 0; }
+  .file-name {
+    color: var(--text-bright);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-path {
+    color: var(--gray);
+    font-size: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-meta {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .file-time { color: var(--gray); font-size: 10px; }
+  .file-size { color: var(--gray); font-size: 9px; }
+
+  /* ── SKILL CHIPS ── */
+  .skills-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .skill-chip {
+    height: var(--chip-height);
+    padding: 0 12px;
+    border-radius: calc(var(--chip-height) / 2);
+    background: var(--accent-dim);
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background var(--transition-fast), color var(--transition-fast);
+    border: none;
+    font-family: inherit;
+  }
+  .skill-chip:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .skill-chip .chip-icon { font-size: 12px; }
+  .skill-category {
+    font-size: 10px;
+    color: var(--gray);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding-top: 8px;
+  }
+  .skill-category:first-child { padding-top: 0; }
+  .skill-desc {
+    display: none;
+    position: absolute;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    border-radius: var(--border-radius);
+    font-size: 10px;
+    color: var(--text);
+    max-width: 280px;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    line-height: 1.5;
+    pointer-events: none;
+  }
+  .skill-chip-wrap {
+    position: relative;
+    display: inline-flex;
+  }
+  .skill-chip-wrap:hover .skill-desc {
+    display: block;
+    bottom: calc(100% + 6px);
+    left: 0;
+  }
+
+  /* ── ACTIVITY LOG ── */
+  .log-item {
+    display: flex;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-time {
+    color: var(--gray);
+    font-size: 10px;
+    white-space: nowrap;
+    min-width: 48px;
+    flex-shrink: 0;
+  }
+  .log-hash {
+    color: var(--accent);
+    font-size: 10px;
+    min-width: 56px;
+    flex-shrink: 0;
+  }
+  .log-msg { color: var(--text); }
+
+  /* ── MCP ITEMS ── */
+  .mcp-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+  }
+  .mcp-item:last-child { border-bottom: none; }
+  .mcp-info { display: flex; align-items: center; gap: 10px; }
+  .mcp-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .mcp-dot.online { background: var(--accent); box-shadow: 0 0 4px rgba(85,170,136,0.4); }
+  .mcp-dot.offline { background: var(--gray); }
+  .mcp-name { font-size: 12px; color: var(--text-bright); }
+  .mcp-type { font-size: 10px; color: var(--gray); }
+  .mcp-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+  .mcp-badge.active { background: var(--accent-dim); color: var(--accent); }
+  .mcp-badge.inactive { background: rgba(110,118,129,0.1); color: var(--gray); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--gray);
+    font-size: 11px;
+  }
+  .empty-state-icon { font-size: 24px; margin-bottom: 8px; opacity: 0.4; }
+  .empty-state-hint {
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--gray);
+    opacity: 0.7;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    :root {
+      --panel-min-width: 100%;
+      --panel-max-width: 100%;
+    }
+    .dashboard { padding-left: 12px; padding-right: 12px; }
+    .metrics-strip { gap: 16px; overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <span class="header-logo">POS <span>Dashboard</span></span>
+    <span class="header-sep">|</span>
+    <span class="header-tag">v2.0</span>
+  </div>
+  <div class="header-right">
+    <span class="header-date" id="current-date"></span>
+    <div class="live-dot" title="System active"></div>
+  </div>
+</header>
+
+<!-- METRICS STRIP -->
+<div class="metrics-strip">
+  <div class="metric-item">
+    <span class="metric-label">Skills</span>
+    <span class="metric-val green">6</span>
+  </div>
+  <div class="metric-divider"></div>
+  <div class="metric-item">
+    <span class="metric-label">MCP</span>
+    <span class="metric-val green">4</span>
+  </div>
+  <div class="metric-divider"></div>
+  <div class="metric-item">
+    <span class="metric-label">Tasks</span>
+    <span class="metric-val amber">3 in progress</span>
+  </div>
+  <div class="metric-divider"></div>
+  <div class="metric-item">
+    <span class="metric-label">Files 7d</span>
+    <span class="metric-val">10</span>
+  </div>
+  <div class="metric-divider"></div>
+  <div class="metric-item">
+    <span class="metric-label">Commits 3d</span>
+    <span class="metric-val blue">15</span>
+  </div>
+  <div class="metric-divider"></div>
+  <div class="metric-item">
+    <span class="metric-label">Context</span>
+    <span class="metric-val green">loaded</span>
+  </div>
+</div>
+
+<!-- DASHBOARD GRID -->
+<div class="dashboard">
+
+  <!-- ═══ TASKS PANEL ═══ -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title"><span class="panel-title-icon">◫</span> Sprint Board</span>
+      <span class="panel-count">10 tasks</span>
+    </div>
+    <div class="panel-body">
+      <div class="task-item">
+        <div class="task-priority urgent"></div>
+        <div class="task-content">
+          <div class="task-title">POS Dashboard v2 — live data</div>
+          <div class="task-meta">
+            <span class="task-id">POS-01</span>
+            <span class="task-status in_progress">IN PROGRESS</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-priority high"></div>
+        <div class="task-content">
+          <div class="task-title">Skill: tg-ai-digest — доработка</div>
+          <div class="task-meta">
+            <span class="task-id">SKL-02</span>
+            <span class="task-status in_progress">IN PROGRESS</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-priority high"></div>
+        <div class="task-content">
+          <div class="task-title">CLAUDE.md — обновить контекст</div>
+          <div class="task-meta">
+            <span class="task-id">CTX-03</span>
+            <span class="task-status in_progress">IN PROGRESS</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-priority medium"></div>
+        <div class="task-content">
+          <div class="task-title">Настроить weekly review routine</div>
+          <div class="task-meta">
+            <span class="task-id">RTN-04</span>
+            <span class="task-status todo">TODO</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-priority medium"></div>
+        <div class="task-content">
+          <div class="task-title">Launch Board MVP</div>
+          <div class="task-meta">
+            <span class="task-id">POS-05</span>
+            <span class="task-status todo">TODO</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-item">
+        <div class="task-priority low"></div>
+        <div class="task-content">
+          <div class="task-title">Описать Meta-Skills модуль</div>
+          <div class="task-meta">
+            <span class="task-id">CTX-06</span>
+            <span class="task-status todo">TODO</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ RECENT FILES ═══ -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title"><span class="panel-title-icon">◇</span> Recent Files</span>
+      <span class="panel-count">10 files</span>
+    </div>
+    <div class="panel-body">
+      <div class="file-item">
+        <span class="file-icon">◈</span>
+        <div class="file-info">
+          <div class="file-name">CLAUDE.md</div>
+          <div class="file-path">My_Knowledge_Base/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 9</div>
+          <div class="file-size">3.1 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">tg-ai-digest.md</div>
+          <div class="file-path">Skills/tg-ai-digest/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 8</div>
+          <div class="file-size">15.8 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">vai-style.md</div>
+          <div class="file-path">Skills/vai-style/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 5</div>
+          <div class="file-size">7.9 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">SKILL.md</div>
+          <div class="file-path">Skills/skill-creator/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">31.6 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">schemas.md</div>
+          <div class="file-path">Skills/skill-creator/references/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">11.8 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">analyzer.md</div>
+          <div class="file-path">Skills/skill-creator/agents/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">10.1 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">grader.md</div>
+          <div class="file-path">Skills/skill-creator/agents/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">8.8 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">comparator.md</div>
+          <div class="file-path">Skills/skill-creator/agents/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">7.1 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">SKILL.md</div>
+          <div class="file-path">Skills/algorithmic-art/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">19.3 KB</div>
+        </div>
+      </div>
+      <div class="file-item">
+        <span class="file-icon">◎</span>
+        <div class="file-info">
+          <div class="file-name">SKILL.md</div>
+          <div class="file-path">Skills/ceo-council/</div>
+        </div>
+        <div class="file-meta">
+          <div class="file-time">Mar 4</div>
+          <div class="file-size">5.2 KB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SKILLS PANEL ═══ -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title"><span class="panel-title-icon">◎</span> Skills</span>
+      <span class="panel-count">6 skills</span>
+    </div>
+    <div class="panel-body">
+      <div class="skill-category">Automation</div>
+      <div class="skills-grid">
+        <div class="skill-chip-wrap">
+          <button class="skill-chip"><span class="chip-icon">⚡</span> tg-ai-digest</button>
+          <div class="skill-desc">Создаёт еженедельный дайджест AI-новостей из Telegram-каналов, генерирует обложку и отправляет</div>
+        </div>
+        <div class="skill-chip-wrap">
+          <button class="skill-chip"><span class="chip-icon">✦</span> vai-style</button>
+          <div class="skill-desc">Форматирует контент в стиле Telegram-канала @VAI_ART</div>
+        </div>
+        <div class="skill-chip-wrap">
+          <button class="skill-chip"><span class="chip-icon">✓</span> todoist-advisor</button>
+          <div class="skill-desc">Анализирует задачи Todoist, находит дубликаты и помогает с структуризацией</div>
+        </div>
+      </div>
+
+      <div class="skill-category">Creative</div>
+      <div class="skills-grid">
+        <div class="skill-chip-wrap">
+          <button class="skill-chip"><span class="chip-icon">◆</span> algorithmic-art</button>
+          <div class="skill-desc">Генеративное искусство через p5.js с seeded randomness</div>
+        </div>
+      </div>
+
+      <div class="skill-category">Strategy</div>
+      <div class="skills-grid">
+        <div class="skill-chip-wrap">
+          <button class="skill-chip"><span class="chip-icon">◈</span> ceo-council</button>
+          <div class="skill-desc">Параллельные C-level эксперты анализируют проект из разных перспектив</div>
+        </div>
+      </div>
+
+      <div class="skill-category">Dev</div>
+      <div class="skills-grid">
+        <div class="skill-chip-wrap">
+          <button class="skill-chip"><span class="chip-icon">⊕</span> skill-creator</button>
+          <div class="skill-desc">Создание, оптимизация и тестирование скиллов с eval-бенчмарками</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ MCP SERVERS ═══ -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title"><span class="panel-title-icon">◉</span> MCP Servers</span>
+      <span class="panel-count">4 servers</span>
+    </div>
+    <div class="panel-body">
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Obsidian</div>
+            <div class="mcp-type">Knowledge Base · File ops</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">ACTIVE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Claude Preview</div>
+            <div class="mcp-type">Browser preview · Screenshots</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">ACTIVE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Claude in Chrome</div>
+            <div class="mcp-type">Browser automation · Navigation</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">ACTIVE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Scheduled Tasks</div>
+            <div class="mcp-type">Task scheduling · Automation</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">ACTIVE</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ACTIVITY LOG ═══ -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title"><span class="panel-title-icon">◷</span> Activity Log</span>
+      <span class="panel-count">last 3 days</span>
+    </div>
+    <div class="panel-body">
+      <div class="log-item">
+        <span class="log-time">25h ago</span>
+        <span class="log-hash">00f62d8</span>
+        <span class="log-msg">feat: send Todoist advisor to topic thread</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">2d ago</span>
+        <span class="log-hash">fbad38c</span>
+        <span class="log-msg">revert: restore llama-3.3-70b-versatile</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">2d ago</span>
+        <span class="log-hash">069bafc</span>
+        <span class="log-msg">temp: switch back to llama-3.3-70b (12k TPM)</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">2d ago</span>
+        <span class="log-hash">f912e4d</span>
+        <span class="log-msg">fix: pass TG_THREAD_DIGEST env var to workflow</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">2d ago</span>
+        <span class="log-hash">c37de91</span>
+        <span class="log-msg">feat: route digest to supergroup topic</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">3d ago</span>
+        <span class="log-hash">0e46198</span>
+        <span class="log-msg">feat: add cover generation to weekly digest</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">3d ago</span>
+        <span class="log-hash">e934c22</span>
+        <span class="log-msg">fix: log TG error, unescape entities, blockquote</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">3d ago</span>
+        <span class="log-hash">37c6e08</span>
+        <span class="log-msg">fix: rewrite prompt with correct examples</span>
+      </div>
+      <div class="log-item">
+        <span class="log-time">3d ago</span>
+        <span class="log-hash">2b1b384</span>
+        <span class="log-msg">rewrite prompt from scratch: fix all feedback</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ STACK PANEL ═══ -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title"><span class="panel-title-icon">◐</span> Stack</span>
+      <span class="panel-count">6 tools</span>
+    </div>
+    <div class="panel-body">
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Claude Code</div>
+            <div class="mcp-type">AI-native dev · Skills · Context</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">CORE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Obsidian</div>
+            <div class="mcp-type">Knowledge Base · Notes · Graph</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">CORE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Todoist</div>
+            <div class="mcp-type">Task management · Capture</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">ACTIVE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">GitHub</div>
+            <div class="mcp-type">Version control · Actions · CI/CD</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">CORE</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Telegram</div>
+            <div class="mcp-type">@VAI_ART · AI digest · Distribution</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">CHANNEL</span>
+      </div>
+      <div class="mcp-item">
+        <div class="mcp-info">
+          <div class="mcp-dot online"></div>
+          <div>
+            <div class="mcp-name">Groq</div>
+            <div class="mcp-type">LLM inference · Digest generation</div>
+          </div>
+        </div>
+        <span class="mcp-badge active">API</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Set current date
+  const now = new Date();
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const d = now.toISOString().slice(0,10);
+  document.getElementById('current-date').textContent = d + ' · ' + days[now.getDay()];
+</script>
+
+</body>
+</html>

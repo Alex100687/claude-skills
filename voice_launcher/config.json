@@ -1,0 +1,18 @@
+{
+  "mode": "push_to_talk",
+  "language": "ru-RU",
+  "mic_index": 2,
+  "commands": {
+    "браузер": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "хром": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "блокнот": "notepad.exe",
+    "проводник": "explorer.exe",
+    "калькулятор": "calc.exe",
+    "терминал": "wt.exe",
+    "телеграм": "C:\\Users\\aleks\\AppData\\Roaming\\Telegram Desktop\\Telegram.exe",
+    "telegram": "C:\\Users\\aleks\\AppData\\Roaming\\Telegram Desktop\\Telegram.exe",
+    "код": "code",
+    "paint": "mspaint.exe"
+  }
+}

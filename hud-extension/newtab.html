@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HUD</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+
+    <header class="hud-header">
+      <div class="hud-logo">[ HUD ]</div>
+      <div class="hud-datetime">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date">—</div>
+      </div>
+    </header>
+
+    <main class="grid">
+
+      <!-- ═══ TASKS ═══ -->
+      <section class="card tasks-card">
+        <div class="card-header">
+          <span class="section-label">// ЗАДАЧИ</span>
+          <button class="voice-btn" id="voiceBtn" title="Голосовой ввод">⬤ REC</button>
+        </div>
+
+        <div class="task-add-row">
+          <input type="text" id="taskInput" placeholder="Новая задача..." autocomplete="off">
+          <select id="prioritySelect" title="Приоритет">
+            <option value="high">🔴</option>
+            <option value="medium" selected>🟡</option>
+            <option value="low">🟢</option>
+          </select>
+          <button class="add-btn" id="addTaskBtn">+</button>
+        </div>
+
+        <div class="filter-row">
+          <button class="filter-btn active" data-filter="all">Все</button>
+          <button class="filter-btn" data-filter="high">🔴 Высокий</button>
+          <button class="filter-btn" data-filter="medium">🟡 Средний</button>
+          <button class="filter-btn" data-filter="low">🟢 Низкий</button>
+        </div>
+
+        <ul class="task-list" id="taskList"></ul>
+        <div class="task-stats" id="taskStats"></div>
+      </section>
+
+      <!-- ═══ LINKS ═══ -->
+      <section class="card links-card">
+        <div class="card-header">
+          <span class="section-label">// БЫСТРЫЕ ССЫЛКИ</span>
+          <button class="icon-btn" id="addLinkBtn" title="Добавить">+</button>
+        </div>
+
+        <div class="links-grid" id="linksGrid"></div>
+
+        <div class="link-form hidden" id="linkForm">
+          <input type="text" id="linkTitle" placeholder="Название" autocomplete="off">
+          <input type="text" id="linkUrl" placeholder="URL (напр. artstation.com)" autocomplete="off">
+          <div class="color-picker-row">
+            <span class="section-label">Цвет:&nbsp;</span>
+            <div class="color-picker" id="colorPicker"></div>
+          </div>
+          <div class="form-actions">
+            <button id="saveLinkBtn">Сохранить</button>
+            <button id="cancelLinkBtn" class="btn-secondary">Отмена</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ DOOM ═══ -->
+      <section class="card doom-card">
+        <div class="card-header">
+          <span class="section-label doom-label">☠ DOOM ENGINE</span>
+          <span class="doom-hint">WASD / ←→ для движения</span>
+        </div>
+
+        <div class="doom-wrapper" id="doomWrapper">
+          <canvas id="doomCanvas"></canvas>
+          <div class="doom-overlay" id="doomOverlay">
+            <div class="doom-logo">DOOM</div>
+            <div class="doom-prompt">[ НАЖМИ ДЛЯ ИГРЫ ]</div>
+          </div>
+        </div>
+
+        <div class="doom-hud-bar">
+          <span class="doom-stat">❤ <span id="doomHp">100</span>%</span>
+          <span class="doom-stat">AMMO <span id="doomAmmo">50</span></span>
+          <span class="doom-stat">FLOOR 1</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
