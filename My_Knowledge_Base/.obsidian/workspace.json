@@ -189,7 +189,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 282.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -203,7 +203,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ab4b74969510bd16",
+  "active": "f56b3a64b60fc789",
   "lastOpenFiles": [
     "Skills/ceo-council/SKILL.md",
     "Scripts/todoist_daily_report.py",
