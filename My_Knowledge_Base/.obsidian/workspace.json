@@ -173,13 +173,23 @@
               "icon": "lucide-list",
               "title": "Структура"
             }
+          },
+          {
+            "id": "f56b3a64b60fc789",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -193,7 +203,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a1bd43d3043cdf44",
+  "active": "ab4b74969510bd16",
   "lastOpenFiles": [
     "Skills/ceo-council/SKILL.md",
     "Scripts/todoist_daily_report.py",
