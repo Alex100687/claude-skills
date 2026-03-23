@@ -117,7 +117,15 @@
       "Bash(PYTHONIOENCODING=utf-8 python -c \":*)",
       "Bash(ls -la \"C:\\\\Users\\\\aleks\\\\AppData\\\\Local\\\\Handy\"\" 2>&1 || echo \"Directory not found or inaccessible \")",
       "Bash(find /c/Users/aleks/AppData/Local/Handy /c/Users/aleks/AppData/Local/com.pais.handy /c/Users/aleks/AppData/Roaming/com.pais.handy -type f \\\\\\(-name *.json -o -name *.yaml -o -name *.yml -o -name *.toml -o -name *.ini -o -name *.cfg -o -name *.lua -o -name *.js \\\\\\))",
-      "Bash(find /c/Users/aleks/AppData/Local/Handy /c/Users/aleks/AppData/Local/com.pais.handy /c/Users/aleks/AppData/Roaming/com.pais.handy -name *.asar -o -name app.js -o -name *.dll)"
+      "Bash(find /c/Users/aleks/AppData/Local/Handy /c/Users/aleks/AppData/Local/com.pais.handy /c/Users/aleks/AppData/Roaming/com.pais.handy -name *.asar -o -name app.js -o -name *.dll)",
+      "Bash(find ~/.claude -type f -name *tg* -o -name *digest*)",
+      "WebFetch(domain:platform.xiaomimimo.com)",
+      "WebFetch(domain:mimo.xiaomi.com)",
+      "WebFetch(domain:artificialanalysis.ai)",
+      "WebFetch(domain:venturebeat.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:eu.36kr.com)",
+      "WebFetch(domain:infralearn.zakaz.su)"
     ]
   }
 }
