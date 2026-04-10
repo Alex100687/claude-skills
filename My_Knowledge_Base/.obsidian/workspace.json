@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CLAUDE.md",
+                "file": "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "CLAUDE"
+              "title": "{self} {reference} Здоровье – информация – 2026-04-10"
             }
           }
         ]
@@ -193,6 +193,10 @@
   },
   "active": "a1bd43d3043cdf44",
   "lastOpenFiles": [
+    "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
+    "Inbox/{work} {reference} Стоимость фрилансеров – 2026-04-10.md",
+    "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
+    "CLAUDE.md",
     "Skills/tg-ai-digest/tg-ai-digest.md",
     "Skills/ceo-council/SKILL.md",
     "Scripts/todoist_daily_report.py",
