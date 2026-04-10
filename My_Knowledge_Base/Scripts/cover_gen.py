@@ -7,14 +7,14 @@ Date logic: start = today - 6 days, end = today
 
 from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime, timedelta
-import os
+import os, random, glob
 
 # --- Paths (relative to this script's location) ---
 SCRIPTS_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR    = os.path.join(SCRIPTS_DIR, "..", "Cover_Elements")
 OUTPUT_PATH = "/tmp/cover.png"
 
-BG_PATH      = os.path.join(BASE_DIR, "backgrounds", "bg_dark.png")
+BG_DIR       = os.path.join(BASE_DIR, "backgrounds")
 LINES_PATH   = os.path.join(BASE_DIR, "lines.png")
 NOVOSTI_PATH = os.path.join(BASE_DIR, "novosti_nedeli.png")
 VAI_PATH     = os.path.join(BASE_DIR, "vai.png")
@@ -40,7 +40,11 @@ def generate_cover(date_start=None, date_end=None):
     date_text = f"{date_start}-{date_end}"
     print(f"Generating cover for: {date_text}")
 
-    base = Image.open(BG_PATH).convert("RGBA")
+    backgrounds = glob.glob(os.path.join(BG_DIR, "*.png"))
+    bg_path = random.choice(backgrounds)
+    print(f"Background: {os.path.basename(bg_path)}")
+
+    base = Image.open(bg_path).convert("RGBA")
     width, height = base.size
 
     base.paste(Image.open(LINES_PATH).convert("RGBA"),   (0, 0), Image.open(LINES_PATH).convert("RGBA"))

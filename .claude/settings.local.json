@@ -125,7 +125,19 @@
       "WebFetch(domain:venturebeat.com)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:eu.36kr.com)",
-      "WebFetch(domain:infralearn.zakaz.su)"
+      "WebFetch(domain:infralearn.zakaz.su)",
+      "Bash(mkdir -p My_Knowledge_Base/Digest_Media)",
+      "WebFetch(domain:qwen.ai)",
+      "WebFetch(domain:x.com)",
+      "WebFetch(domain:renovateqr.com)",
+      "Bash(file /c/Users/aleks/OneDrive/Desktop/Knowledge_Base/My_Knowledge_Base/Cover_Elements/backgrounds/*.png)",
+      "Bash(grep -E \"\\\\.\\(json|yaml|yml|txt\\)$\")",
+      "Bash(grep -E \"\\\\.py$\")",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(curl -s https://raw.githubusercontent.com/wild-defi/claude-code-skills/main/ai-personal-os/commands/goals.md)",
+      "Bash(setx TODOIST_TOKEN \"18b7ba53e343ec809d939eeb93fc806e560f01a1\")",
+      "Bash(export TODOIST_TOKEN=\"18b7ba53e343ec809d939eeb93fc806e560f01a1\")"
     ]
   }
 }
