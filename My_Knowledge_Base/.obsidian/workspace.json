@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
+                "file": "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "{self} {reference} Здоровье – информация – 2026-04-10"
+              "title": "{self} {reference} Стоит посмотреть – 2026-04-10"
             }
           }
         ]
@@ -193,8 +193,11 @@
   },
   "active": "a1bd43d3043cdf44",
   "lastOpenFiles": [
-    "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
     "Inbox/{work} {reference} Стоимость фрилансеров – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
+    "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
     "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
     "CLAUDE.md",
     "Skills/tg-ai-digest/tg-ai-digest.md",
