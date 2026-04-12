@@ -137,7 +137,10 @@
       "WebFetch(domain:api.github.com)",
       "Bash(curl -s https://raw.githubusercontent.com/wild-defi/claude-code-skills/main/ai-personal-os/commands/goals.md)",
       "Bash(setx TODOIST_TOKEN \"18b7ba53e343ec809d939eeb93fc806e560f01a1\")",
-      "Bash(export TODOIST_TOKEN=\"18b7ba53e343ec809d939eeb93fc806e560f01a1\")"
+      "Bash(export TODOIST_TOKEN=\"18b7ba53e343ec809d939eeb93fc806e560f01a1\")",
+      "Bash(python -c ':*)",
+      "Bash(python -X utf8 -c ':*)",
+      "Bash(export PYTHONIOENCODING=utf-8)"
     ]
   }
 }
