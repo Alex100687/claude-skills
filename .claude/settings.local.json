@@ -140,7 +140,21 @@
       "Bash(export TODOIST_TOKEN=\"18b7ba53e343ec809d939eeb93fc806e560f01a1\")",
       "Bash(python -c ':*)",
       "Bash(python -X utf8 -c ':*)",
-      "Bash(export PYTHONIOENCODING=utf-8)"
+      "Bash(export PYTHONIOENCODING=utf-8)",
+      "Bash(python -c \"from PIL import Image; print\\('Pillow OK'\\)\")",
+      "WebFetch(domain:happyhorse-ai.com)",
+      "WebFetch(domain:www.minimax.io)",
+      "WebFetch(domain:www.worldlabs.ai)",
+      "Bash(curl -s -X POST https://api.telegram.org/bot8784420556:AAH-9kjv374fgDcHRX_UwXv4C_m2YBuZ9a4/sendMessage -H 'Content-Type: application/json' -d '{:*)",
+      "Bash(python -X utf8 \"C:/Users/aleks/OneDrive/Desktop/Knowledge_Base/My_Knowledge_Base/Scripts/tg_msg.py\")",
+      "WebFetch(domain:fal.ai)",
+      "WebFetch(domain:modddif.com)",
+      "WebFetch(domain:blog.fal.ai)",
+      "WebFetch(domain:docs.modddif.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "Bash(ls -lt \"C:/Users/aleks/.claude/projects/C--Users-aleks-OneDrive-Desktop-Knowledge-Base/\"*.jsonl)",
+      "Bash(python3 -c ':*)",
+      "Bash(grep -E \"\\\\.\\(md|txt\\)$\")"
     ]
   }
 }

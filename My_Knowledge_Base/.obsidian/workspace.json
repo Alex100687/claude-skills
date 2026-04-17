@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
+                "file": "Inbox/Работа — Список Fx артистов.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "{self} {reference} Стоит посмотреть – 2026-04-10"
+              "title": "Работа — Список Fx артистов"
             }
           }
         ]
@@ -177,7 +177,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 239.5
+    "width": 540.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -193,10 +193,28 @@
   },
   "active": "a1bd43d3043cdf44",
   "lastOpenFiles": [
-    "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
     "Inbox/{work} {reference} Стоимость фрилансеров – 2026-04-10.md",
-    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
+    "Inbox/Работа — Инструкция по выставлению счетов.md",
+    "Inbox/Работа — Информация.md",
+    "Inbox/Работа — Warpoint Arena.md",
+    "Inbox/Работа — Экспорт объектов.md",
+    "Inbox/Работа — Техническая часть проекта.md",
+    "Inbox/Работа — Список Fx артистов.md",
+    "Inbox/Работа — Список персонажников.md",
+    "Inbox/Работа — Создание и перенос префабов.md",
+    "Inbox/Работа — План созвонов с кандидатами.md",
+    "Inbox/Работа — Оформление документов.md",
+    "Inbox/attachments/Инструкция_по_выставлению_счетов_1.png",
+    "Inbox/attachments/Экспорт_объектов_1.png",
+    "Inbox/attachments/Оформление_документов_3.png",
+    "Inbox/attachments/Оформление_документов_2.png",
+    "Inbox/attachments/Оформление_документов_1.png",
+    "Inbox/Работа — Если прибавка.md",
+    "Inbox/attachments",
+    "Inbox/Работа — Общий док.md",
     "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
     "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
     "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
     "CLAUDE.md",
@@ -212,19 +230,9 @@
     "Skills/vai-style/vai-style.md",
     "Skills/skill-creator/agents/analyzer.md",
     "Skills/vai-style/SKILL.md",
-    "Skills/VAI_ART/SKILL.md",
     "Skills/VAI_ART",
-    "Дайджесты/2026-03-05-vai.md",
     "Skills/vai-style",
-    "Skills/tg-ai-digest/SKILL.md",
     "Skills/tg-ai-digest",
-    "Skills/skill-creator/references/schemas.md",
-    "Skills/skill-creator/scripts/__init__.py",
-    "Skills/skill-creator/scripts/utils.py",
-    "Skills/skill-creator/agents/grader.md",
-    "Skills/skill-creator/agents/comparator.md",
-    "Skills/algorithmic-art/SKILL.md",
-    "Skills/tg-ai-digest.md",
-    "Добро пожаловать.md"
+    "Skills/skill-creator/scripts/__init__.py"
   ]
 }
