@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Inbox/{work} {plan} Улучшения Warpoint Arena – 2026-04-17.md",
+                "file": "Inbox/{self} {reference} Покупки дом – 2026-04-17.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "{work} {plan} Улучшения Warpoint Arena – 2026-04-17"
+              "title": "{self} {reference} Покупки дом – 2026-04-17"
             }
           }
         ]
@@ -193,11 +193,22 @@
   },
   "active": "a1bd43d3043cdf44",
   "lastOpenFiles": [
+    "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
+    "Inbox/{self} {reference} Покупки дом – 2026-04-17.md",
+    "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
+    "Inbox/{self} {reference} Стол игровой референс – 2026-04-17.md",
+    "Inbox/{work} {reference} Стоимость фрилансеров – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
+    "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
+    "Inbox/{self} {reference} Мои проекты – 2026-04-17.md",
+    "Inbox/{channel} {plan} Контент-план VAI_ART – 2026-04-15.md",
+    "Inbox/{self} {plan} Задачи на год – 2026-04-17.md",
+    "Inbox/{work} {plan} Улучшения Warpoint Arena – 2026-04-17.md",
+    "Inbox/attachments/squid_game_actress.png",
     "Inbox/attachments/warpoint_rating_table.jpg",
     "Inbox/attachments/warpoint_weapons_fixed.png",
     "Inbox/attachments/warpoint_ruins.png",
     "Inbox/attachments/warpoint_локации_руины.png",
-    "Inbox/{work} {reference} Стоимость фрилансеров – 2026-04-10.md",
     "Inbox/Работа — Инструкция по выставлению счетов.md",
     "Inbox/Работа — Информация.md",
     "Inbox/Работа — Общий док.md",
@@ -216,23 +227,14 @@
     "Inbox/attachments/Оформление_документов_1.png",
     "Inbox/Работа — Если прибавка.md",
     "Inbox/attachments",
-    "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
-    "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
-    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
-    "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
     "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
     "CLAUDE.md",
     "Skills/tg-ai-digest/tg-ai-digest.md",
-    "Skills/ceo-council/SKILL.md",
     "Scripts/todoist_daily_report.py",
     "Scripts/todoist_fetch.py",
     "Scripts/todoist.py",
     "Scripts",
     "Новая папка",
-    "Дайджесты/2026-03-05.md",
-    "Skills/skill-creator/SKILL.md",
-    "Skills/vai-style/vai-style.md",
-    "Skills/skill-creator/agents/analyzer.md",
     "Skills/VAI_ART",
     "Skills/vai-style",
     "Skills/tg-ai-digest",

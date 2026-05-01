@@ -154,7 +154,18 @@
       "WebFetch(domain:www.anthropic.com)",
       "Bash(ls -lt \"C:/Users/aleks/.claude/projects/C--Users-aleks-OneDrive-Desktop-Knowledge-Base/\"*.jsonl)",
       "Bash(python3 -c ':*)",
-      "Bash(grep -E \"\\\\.\\(md|txt\\)$\")"
+      "Bash(grep -E \"\\\\.\\(md|txt\\)$\")",
+      "Bash(python -X utf8 -c ' *)",
+      "Bash(python -X utf8 My_Knowledge_Base/Scripts/_send_digest_tmp.py)",
+      "Bash(python -X utf8 My_Knowledge_Base/Scripts/_send_mini_tmp.py)",
+      "WebFetch(domain:flowmusic.google)",
+      "WebFetch(domain:openai.com)",
+      "WebFetch(domain:klingai.com)",
+      "WebFetch(domain:grok.com)",
+      "WebFetch(domain:docs.google.com)",
+      "WebFetch(domain:doc-0c-80-docstext.googleusercontent.com)",
+      "Bash(curl -L -o /tmp/news_archive.docx \"https://docs.google.com/document/d/1iRuI74pSVdtSHR_nNv1yR6Z2IslqgbOuD-at5lthFLo/export?format=docx\")",
+      "Read(//tmp/**)"
     ]
   }
 }

@@ -1,0 +1,38 @@
+Ох. Происходит очень много всего и везде. Быстро пробежимся по самому интересному.
+
+🔹 <a href="https://openai.com/index/introducing-gpt-5-5/">GPT-5.5</a> — OpenAI выкатили нового флагмана под кодовым именем Spud, упор на агентный кодинг.
+<blockquote>— 58.6% на SWE Pro и 82.7% на Terminal-Bench
+— на новой базовой архитектуре, тратит меньше токенов на ту же задачу
+— цена $5 / $30 за миллион токенов, Pro-тариф $30 / $180
+— уже в ChatGPT и Codex для Plus / Pro / Business</blockquote>
+
+🔹 <a href="https://huggingface.co/deepseek-ai/DeepSeek-V4-Pro">DeepSeek V4</a> — китайцы выложили в опенсорс две модели уровня фронтира, Pro и Flash.
+<blockquote>— V4-Pro 1.6T параметров (49B активных), V4-Flash 284B (13B активных)
+— контекст 1 миллион токенов на обеих
+— 4x меньше вычислений vs V3.2 и в 10 раз меньше памяти на KV-кэше
+— цена Flash $0.14 / $0.28, Pro $1.74 / $3.48 за миллион токенов</blockquote>
+
+🔹 Kling 4K — Kuaishou добавили нативную 4K-генерацию видео в Kling 3.0.
+<blockquote>— 4K считается на модели, а не апскейлится постфактом
+— скидка 20% на новый режим до 7 мая</blockquote>
+
+🔹 <a href="https://exp.volcengine.com/ark/vision?mode=vision&modelId=doubao-seed3d-2-0-260328">Seed3D 2.0</a> — ByteDance обновили 3D-генератор от создателей Seedance.
+<blockquote>— многопроходная генерация: сначала форма, потом детали
+— PBR-текстуры на выходе и сегментация модели на части
+— на бенчмарках обходит Hunyuan3D на части тестов</blockquote>
+
+🔹 <a href="https://modelscope.ai/studios/Qwen/Qwen-Image-2.0-pro">Qwen-Image-2.0-Pro</a> — Alibaba обновили генератор изображений, 9-е место в Text-to-Image Arena.
+<blockquote>— стабильность стиля и точное следование инструкциям
+— мультиязычный рендер текста внутри картинок без артефактов</blockquote>
+
+🔹 Grok Imagine — xAI обновили видеомодель, главный апгрейд — звук и губы.
+<blockquote>— улучшенный lip-sync на сгенерированных персонажах
+— аудио точно подвязано к движению лица</blockquote>
+
+🔹 <a href="https://claude.com/blog/claude-managed-agents">Claude Managed Agents</a> — Anthropic запустили облачный запуск агентов в GA.
+<blockquote>— сессии работают часами автономно, можно гонять параллельно
+— не нужно поднимать свою инфраструктуру для долгих задач
+— $0.08 / час активной работы поверх обычной API-цены</blockquote>
+
+@VAI_ART
+#VAI_News
