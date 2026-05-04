@@ -165,7 +165,8 @@
       "WebFetch(domain:docs.google.com)",
       "WebFetch(domain:doc-0c-80-docstext.googleusercontent.com)",
       "Bash(curl -L -o /tmp/news_archive.docx \"https://docs.google.com/document/d/1iRuI74pSVdtSHR_nNv1yR6Z2IslqgbOuD-at5lthFLo/export?format=docx\")",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(/c/Python314/python /c/Users/aleks/AppData/Local/Temp/parse_tg.py)"
     ]
   }
 }
