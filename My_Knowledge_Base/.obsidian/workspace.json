@@ -94,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -103,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки"
+              "title": "Обратные ссылки для {self} {reference} Художники – 2026-05-01"
             }
           },
           {
@@ -112,11 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки"
+              "title": "Исходящие ссылки из {self} {reference} Художники – 2026-05-01"
             }
           },
           {
@@ -154,12 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
+                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура"
+              "title": "Структура {self} {reference} Художники – 2026-05-01"
             }
           },
           {
@@ -191,7 +194,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "a1bd43d3043cdf44",
+  "active": "f56b3a64b60fc789",
   "lastOpenFiles": [
     "Inbox/{self} {reference} Покупки дом – 2026-04-17.md",
     "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
