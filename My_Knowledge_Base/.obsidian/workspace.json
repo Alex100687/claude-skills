@@ -11,14 +11,10 @@
             "id": "a1bd43d3043cdf44",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "{self} {reference} Художники – 2026-05-01"
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "Граф"
             }
           }
         ]
@@ -94,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +99,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Обратные ссылки для {self} {reference} Художники – 2026-05-01"
+              "title": "Обратные ссылки"
             }
           },
           {
@@ -113,12 +108,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Исходящие ссылки из {self} {reference} Художники – 2026-05-01"
+              "title": "Исходящие ссылки"
             }
           },
           {
@@ -156,13 +150,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Inbox/{self} {reference} Художники – 2026-05-01.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Структура {self} {reference} Художники – 2026-05-01"
+              "title": "Структура"
             }
           },
           {
@@ -194,8 +187,15 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "f56b3a64b60fc789",
+  "active": "a1bd43d3043cdf44",
   "lastOpenFiles": [
+    "Inbox/{self} {plan} Задачи на год – 2026-04-17.md",
+    "Inbox/{self} {plan} План дохода 2026 – 2026-04-30.md",
+    "Без названия 1.canvas",
+    "Без названия.canvas",
+    "Без названия 1.base",
+    "Без названия.base",
+    "Inbox/{self} {reference} Художники – 2026-05-01.md",
     "Inbox/{self} {reference} Покупки дом – 2026-04-17.md",
     "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
     "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
@@ -205,7 +205,6 @@
     "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
     "Inbox/{self} {reference} Мои проекты – 2026-04-17.md",
     "Inbox/{channel} {plan} Контент-план VAI_ART – 2026-04-15.md",
-    "Inbox/{self} {plan} Задачи на год – 2026-04-17.md",
     "Inbox/{work} {plan} Улучшения Warpoint Arena – 2026-04-17.md",
     "Inbox/attachments/squid_game_actress.png",
     "Inbox/attachments/warpoint_rating_table.jpg",
@@ -231,16 +230,12 @@
     "Inbox/Работа — Если прибавка.md",
     "Inbox/attachments",
     "Inbox/{self} {reference} Здоровье – информация – 2026-04-10.md",
-    "CLAUDE.md",
-    "Skills/tg-ai-digest/tg-ai-digest.md",
     "Scripts/todoist_daily_report.py",
     "Scripts/todoist_fetch.py",
     "Scripts/todoist.py",
     "Scripts",
     "Новая папка",
     "Skills/VAI_ART",
-    "Skills/vai-style",
-    "Skills/tg-ai-digest",
-    "Skills/skill-creator/scripts/__init__.py"
+    "Skills/vai-style"
   ]
 }
