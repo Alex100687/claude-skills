@@ -11,10 +11,14 @@
             "id": "a1bd43d3043cdf44",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Граф"
+              "type": "markdown",
+              "state": {
+                "file": "Inbox/Работа — Информация.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Работа — Информация"
             }
           }
         ]
@@ -189,6 +193,10 @@
   },
   "active": "a1bd43d3043cdf44",
   "lastOpenFiles": [
+    "Inbox/Работа — Оформление документов.md",
+    "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
+    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
+    "Inbox/{self} {reference} Покупки дом – 2026-04-17.md",
     "Inbox/{self} {plan} Задачи на год – 2026-04-17.md",
     "Inbox/{self} {plan} План дохода 2026 – 2026-04-30.md",
     "Без названия 1.canvas",
@@ -196,12 +204,9 @@
     "Без названия 1.base",
     "Без названия.base",
     "Inbox/{self} {reference} Художники – 2026-05-01.md",
-    "Inbox/{self} {reference} Покупки дом – 2026-04-17.md",
-    "Inbox/{self} {reference} Стоит посмотреть – 2026-04-10.md",
     "Inbox/{self} {reference} Стоит почитать – 2026-04-10.md",
     "Inbox/{self} {reference} Стол игровой референс – 2026-04-17.md",
     "Inbox/{work} {reference} Стоимость фрилансеров – 2026-04-10.md",
-    "Inbox/{self} {reference} Стоит поиграть – 2026-04-10.md",
     "Inbox/{self} {reference} Мысли и заметки – 2026-04-10.md",
     "Inbox/{self} {reference} Мои проекты – 2026-04-17.md",
     "Inbox/{channel} {plan} Контент-план VAI_ART – 2026-04-15.md",
@@ -214,7 +219,6 @@
     "Inbox/Работа — Инструкция по выставлению счетов.md",
     "Inbox/Работа — Информация.md",
     "Inbox/Работа — Общий док.md",
-    "Inbox/Работа — Оформление документов.md",
     "Inbox/Работа — Список Fx артистов.md",
     "Inbox/Работа — Warpoint Arena.md",
     "Inbox/Работа — Экспорт объектов.md",
